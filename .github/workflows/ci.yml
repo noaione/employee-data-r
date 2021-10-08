@@ -46,6 +46,7 @@ jobs:
       - name: Prepare script
         run: |
           echo "main()" >> main.R
+          cat main.R
 
       - name: Run main script
         run: Rscript main.R
