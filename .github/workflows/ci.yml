@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v1
+        with:
+          use-public-rspm: true
+
+      - name: Install lintr
+        run: install.packages("lintr")
+        shell: Rscript {0}
+
+      - name: Lint root directory
+        run: lintr::lint_dir()
+        shell: Rscript {0}
+
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v1
+        with:
+          use-public-rspm: true
+
+      - name: Install required packages
+        run: |
+          install.packages("ggplot2")
+          install.packages("crayon")
+        shell: Rscript {0}
+
+      - name: Prepare script
+        run: |
+          echo "main()" >> main.R
+          cat main.R
+
+      - name: Run main script
+        run: Rscript main.R
