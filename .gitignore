@@ -41,3 +41,4 @@ vignettes/*.pdf
 _docs/
 *.py
 !tools/*.py
+main_ci.r
