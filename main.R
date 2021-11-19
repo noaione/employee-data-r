@@ -11,14 +11,18 @@ library(ggrepel)
 
 # ======================== Load Data ========================
 
-# The employee data
+# Load the employee data from csv file into variables. (table)
 employee_data <- read.csv("employee_attrition.csv")
-# Start a new window
+# Start a new window for easier graph viewing
+# The reason is because I can resize the window and the graph
+# will follows it.
 windows()
 
 
 # ======================== Data Cleaning ========================
 
+# Copy the data to another variable just in case we want
+# to revert course the change.
 original_data <- employee_data
 # employee_data <- original_data
 View(original_data)
@@ -77,6 +81,7 @@ employee_data <- employee_data %>%
     group_by(employee_id) %>%
     slice(n())
 
+# Summarise the preprocessed data
 summary(employee_data)
 
 # ======================== Question 1 ===================================
@@ -96,7 +101,6 @@ ret_rate <- function(active, terminate, total) {
     return(terminate / total);
 }
 
-# ******** Exploration ********
 # Explore the data
 # Check what department has the highest retention and the lowest.
 employee_data %>%
@@ -129,6 +133,9 @@ ggplot(q1_explore, aes(x = department_name, y = retention_rate)) +
 
 # ********* Analysis 1 *********
 
+# We make a new variable
+# Listing all of the lowest or in this case
+# a zero percent of retention rate from previous exploration.
 zero_retention_department <- c(
     "Accounting",
     "Accounts Payable",
@@ -198,6 +205,7 @@ employee_data %>%
 
 # ********* Analysis 2 *********
 
+# We want to check the total of each department with their own length_of_service
 employee_data %>%
     filter(
         department_name %in% zero_retention_department
@@ -211,6 +219,8 @@ employee_data %>%
     ) %>%
     View
 
+# Same thing as above, but we visualize it with ggplot
+# We are using another scatter plot to visualize the data
 employee_data %>%
     filter(
         department_name %in% zero_retention_department
@@ -236,3 +246,106 @@ employee_data %>%
             box.padding = 0.2,
             point.padding = 0.45,
         )
+
+# ======================== Question 2 ===================================
+# How influenced someone to take a heavy job?
+# =======================================================================
+
+# Simple snippet to view all the job
+employee_data %>%
+    group_by(job_title) %>%
+    summarise(
+        total = n(),
+    ) %>%
+    View
+
+# Create a variable that fits into "Heavy" work type
+heavy_work_job <- c(
+    "Baker",
+    "Meat Cutter",
+    "Shelf Stocker"
+)
+
+# ********* Analysis 1 *********
+# Visualize the data with every job title and gender
+employee_data %>%
+    filter(job_title %in% heavy_work_job) %>%
+    group_by(job_title, gender) %>%
+    summarise(
+        total = n(),
+    ) %>%
+    View
+
+# Ease of access to colour our nice graph
+# This is predetermined, not a good idea
+# but it's fast and I need to be fast since deadline came fast
+gender_col <- c(
+    "lightblue",
+    "pink",
+    "lightblue",
+    "pink",
+    "lightblue",
+    "pink"
+)
+
+# Visualize the data, same thing as the above code
+# that tries to visualize it via table, but we use ggplot
+# We use facet_wrap to group the graph per job title
+# that's why we need the above gender_col variables.
+employee_data %>%
+    filter(job_title %in% heavy_work_job) %>%
+    group_by(job_title, gender) %>%
+    summarise(
+        total = n(),
+    ) %>%
+    ggplot(
+        aes(
+            y = total,
+            x = gender,
+            fill = factor(gender_col, labels = c("Male", "Female"))
+        )
+    ) +
+        geom_bar(stat = "identity") +
+        facet_wrap(~ job_title, ncol = 3) +
+        labs(
+            x = "Gender",
+            y = "Count",
+            title = "Total gender per job title",
+            fill = "Gender"
+        )
+
+# ********* Analysis 2 *********
+# Visualize the data
+# We will categorize the age into age group for easier understanding
+employee_data %>%
+    filter((job_title %in% heavy_work_job) && status != "TERMINATED") %>%
+    mutate(
+        age_group = case_when(
+            age <= 16 ~ "0-16",
+            age > 16 & age <= 30 ~ "17-30",
+            age > 30 & age <= 45 ~ "31-45",
+            age > 45 & age <= 60 ~ "46-60",
+            age > 60 ~ "61+"
+        ),
+        age_group = factor(
+            age_group, levels = c("0-16", "17-30", "31-45", "46-60", "61+")
+        )
+    ) %>%
+    group_by(job_title, age_group) %>%
+    summarise(
+        total = n(),
+    ) %>%
+    ggplot(aes(x = age_group, y = total, fill = age_group)) +
+        geom_bar(stat = "identity") +
+        facet_wrap(~ job_title, ncol = 3) +
+        labs(
+            x = "Age Group",
+            y = "Count",
+            title = "Total employee per age group",
+            fill = "Age Group"
+        ) +
+        geom_text(aes(label = total), nudge_y = 10)
+
+# ======================== Question 3 ===================================
+# TODO: Replace this with actual question that I want to do
+# =======================================================================
