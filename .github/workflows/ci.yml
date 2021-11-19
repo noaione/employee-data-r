@@ -39,8 +39,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ env.RENV_PATHS_ROOT }}
-          key: check-${{ steps.get-version.outputs.os-version }}-${{ steps.get-version.outputs.r-version }}-${{ inputs.cache-version }}-${{ hashFiles('renv.lock') }}
-          restore-keys: check-${{ steps.get-version.outputs.os-version }}-${{ steps.get-version.outputs.r-version }}-${{inputs.cache-version }}-
+          key: lint-${{ steps.get-version.outputs.os-version }}-${{ steps.get-version.outputs.r-version }}-${{ inputs.cache-version }}-${{ hashFiles('renv.lock') }}
+          restore-keys: lint-${{ steps.get-version.outputs.os-version }}-${{ steps.get-version.outputs.r-version }}-${{inputs.cache-version }}-
 
       - name: Install lintr
         run: install.packages("lintr")
