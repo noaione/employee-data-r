@@ -131,7 +131,7 @@ ggplot(q1_explore, aes(x = department_name, y = retention_rate)) +
         y = "Retention Rate"
     )
 
-# ********* Analysis 1 *********
+# ********* Analysis 1.1 *********
 
 # We make a new variable
 # Listing all of the lowest or in this case
@@ -203,7 +203,7 @@ employee_data %>%
             point.padding = 0.45,
         )
 
-# ********* Analysis 2 *********
+# ********* Analysis 1.2 *********
 
 # We want to check the total of each department with their own length_of_service
 employee_data %>%
@@ -266,7 +266,8 @@ heavy_work_job <- c(
     "Shelf Stocker"
 )
 
-# ********* Analysis 1 *********
+# ********* Analysis 2.1 *********
+
 # Visualize the data with every job title and gender
 employee_data %>%
     filter(job_title %in% heavy_work_job) %>%
@@ -314,7 +315,8 @@ employee_data %>%
             fill = "Gender"
         )
 
-# ********* Analysis 2 *********
+# ********* Analysis 2.2 *********
+
 # Visualize the data
 # We will categorize the age into age group for easier understanding
 employee_data %>%
