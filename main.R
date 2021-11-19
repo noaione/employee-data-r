@@ -114,8 +114,6 @@ employee_data %>%
     ) %>%
     View
 
-# Spawn new window, because VS Code sucks
-windows()
 # Plot a bar chart
 ggplot(q1_explore, aes(x = department_name, y = retention_rate)) +
     geom_bar(
