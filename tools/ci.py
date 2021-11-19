@@ -2,11 +2,12 @@ import os
 from pathlib import Path
 from typing import List
 
-ci_file = Path(__file__)
+ci_file = Path(__file__).absolute()
 base_dirs = [
     ci_file.parent,
     ci_file.parent.parent,
     ci_file.parent.parent.parent,
+    Path(__name__).absolute().parent,
 ]
 
 base_dir: Path = None
