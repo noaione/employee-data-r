@@ -37,6 +37,11 @@ jobs:
         with:
           use-public-rspm: true
 
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9.x"
+
       - name: Install required packages
         run: |
           install.packages("ggplot2")
@@ -45,8 +50,7 @@ jobs:
 
       - name: Prepare script
         run: |
-          echo "main()" >> main.R
-          cat main.R
+          python3 tools/ci.py
 
       - name: Run main script
-        run: Rscript main.R
+        run: Rscript main_ci.R
