@@ -351,6 +351,7 @@ employee_data %>%
 
 # ********* Analysis 2.3 *********
 
+# Plot data using length of service group and job title
 employee_data %>%
     filter(job_title %in% heavy_work_job) %>%
     filter(status == "TERMINATED") %>%
