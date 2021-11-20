@@ -322,6 +322,7 @@ employee_data %>%
 employee_data %>%
     filter((job_title %in% heavy_work_job) && status != "TERMINATED") %>%
     mutate(
+        # age_group code are taken and adapted from (budugulo, 2020).
         age_group = case_when(
             age <= 16            ~ "0-16",
             age > 16 & age <= 30 ~ "17-30",
