@@ -323,11 +323,11 @@ employee_data %>%
     filter((job_title %in% heavy_work_job) && status != "TERMINATED") %>%
     mutate(
         age_group = case_when(
-            age <= 16 ~ "0-16",
+            age <= 16            ~ "0-16",
             age > 16 & age <= 30 ~ "17-30",
             age > 30 & age <= 45 ~ "31-45",
             age > 45 & age <= 60 ~ "46-60",
-            age > 60 ~ "61+"
+            age > 60             ~ "61+"
         ),
         age_group = factor(
             age_group, levels = c("0-16", "17-30", "31-45", "46-60", "61+")
@@ -348,6 +348,115 @@ employee_data %>%
         ) +
         geom_text(aes(label = total), nudge_y = 10)
 
+# ********* Analysis 2.3 *********
+
+employee_data %>%
+    filter(job_title %in% heavy_work_job) %>%
+    filter(status == "TERMINATED") %>%
+    mutate(
+        length_group = case_when(
+            length_of_service <= 5                            ~ "0-5",
+            length_of_service > 5 && length_of_service <= 10  ~ "6-10",
+            length_of_service > 10 && length_of_service <= 15 ~ "11-15",
+            length_of_service > 15 && length_of_service <= 20 ~ "16-20",
+            length_of_service > 20                            ~ "21+",
+        ),
+        length_group = factor(
+            length_group, levels = c("0-5", "6-10", "11-15", "16-20", "21+")
+        )
+    ) %>%
+    group_by(job_title, length_group) %>%
+    summarise(
+        total = n(),
+    ) %>%
+    ggplot(aes(x = length_group, y = total, fill = length_group)) +
+        geom_bar(stat = "identity") +
+        facet_wrap(~ job_title, ncol = 3) +
+        labs(
+            x = "Length of Service",
+            y = "Count",
+            title = "Total employee per length of service",
+            fill = "Length of Service"
+        ) +
+        geom_text(aes(label = total), nudge_y = 5)
+
 # ======================== Question 3 ===================================
 # TODO: Replace this with actual question that I want to do
 # =======================================================================
+
+# ********* Analysis 3.1 *********
+
+# Take the length_of_service and subtract it with age
+employee_with_hired_age <- employee_data %>%
+    mutate(
+        hired_age = age - length_of_service
+    )
+
+# Take the job title and when they are hired and group them up together
+# to see the relation between the fresh grad job and their age
+employee_with_hired_age %>%
+    filter(hired_age <= 25) %>%
+    group_by(job_title, hired_age) %>%
+    summarise(
+        total = n(),
+    ) %>%
+    ggplot(aes(x = hired_age, y = total, fill = hired_age)) +
+        geom_bar(stat = "identity") +
+        facet_wrap(~ job_title, ncol = 3) +
+        labs(
+            x = "Hired Age",
+            y = "Count",
+            title = "Total employee per hired age",
+            fill = "Hired Age"
+        ) +
+        geom_text(aes(label = total), nudge_y = 10)
+
+# ********* Analysis 3.2 *********
+
+# Take the job title and gender and group them up together
+# to see the relation between the fresh grad job and their gender
+employee_with_hired_age %>%
+    filter(hired_age <= 25) %>%
+    group_by(job_title, gender) %>%
+    summarise(
+        total = n(),
+    ) %>%
+    ggplot(aes(x = gender, y = total, fill = gender)) +
+        geom_bar(stat = "identity") +
+        facet_wrap(~ job_title, ncol = 3) +
+        labs(
+            x = "Gender",
+            y = "Count",
+            title = "Total employee per gender",
+            fill = "Gender"
+        ) +
+        geom_text(aes(label = total), nudge_y = 30)
+
+# ********* Analysis 3.3 *********
+
+# Take the job title, length of service and termination reason
+# to see the relation between three of them.
+# We also want to filter out to only include terminated employee
+# only because we want to see how long before fres grad
+# decide to resign themselves.
+employee_with_hired_age %>%
+    filter(hired_age <= 25) %>%
+    filter(status == "TERMINATED") %>%
+    group_by(job_title, length_of_service, termination_reason) %>%
+    summarise(
+        total = n(),
+    ) %>%
+    ggplot(aes(x = length_of_service, y = total)) +
+        geom_bar(stat = "identity") +
+        facet_grid(termination_reason ~ job_title) +
+        labs(
+            x = "Length of Service (in Years)",
+            y = "Count",
+            title = "Employee terminated by their length of service ",
+            fill = "Length of Service"
+        ) +
+        geom_label_repel(
+            aes(label = total),
+            box.padding = 0.2,
+            line_height = 0.5,
+        )
